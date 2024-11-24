@@ -33,14 +33,14 @@ spec:
         stage('Build') {
             steps {
                 container('gradle') {
-                    sh './gradlew clean build'
+                    sh './gradle clean build'
                 }
             }
         }
         stage('Test') {
             steps {
                 container('gradle') {
-                    sh './gradlew test'
+                    sh './gradle test'
                 }
             }
         }
