@@ -1,0 +1,133 @@
+plugins {
+    alias libs.plugins.spring.boot apply false
+    alias libs.plugins.dependency.management apply false
+    alias libs.plugins.lombok apply false
+    alias libs.plugins.spotless apply false
+}
+
+group = 'dev.avorakh.demo.application'
+
+rootProject.version = '0.1.0'
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'io.freefair.lombok'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jvm-test-suite'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.diffplug.spotless'
+    apply plugin: 'pmd'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+
+    dependencyManagement {
+        imports {
+            mavenBom libs.groovy.bom.get().toString()
+            mavenBom libs.spock.bom.get().toString()
+            mavenBom libs.junit.bom.get().toString()
+        }
+    }
+
+    dependencies {
+        compileOnly libs.jetbrains.annotations
+        testCompileOnly libs.jetbrains.annotations
+    }
+
+
+
+    lombok {
+        version = "${libs.versions.lombok.get()}"
+    }
+
+    testing {
+        suites {
+            test {
+                testType = TestSuiteType.UNIT_TEST
+                dependencies {
+                    libs.bundles.spock.core.test.get().forEach {
+                        implementation(it)
+                    }
+                }
+            }
+        }
+    }
+
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+        finalizedBy jacocoTestReport
+    }
+
+
+    jacoco {
+        toolVersion = libs.versions.jacoco.get()
+    }
+
+
+    jacocoTestReport {
+        executionData(test)
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        dependsOn test
+    }
+
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.5 // 50% Code Coverage
+                }
+            }
+        }
+        dependsOn jacocoTestReport
+    }
+
+    check.dependsOn jacocoTestCoverageVerification
+
+    spotless {
+        java {
+            palantirJavaFormat()
+            importOrder()
+            removeUnusedImports()
+            cleanthat()
+            formatAnnotations()
+        }
+        groovy {
+            greclipse().configFile("$rootDir/config/spotless/groovy/greclipse.properties")
+            importOrder()
+            indentWithSpaces()
+            endWithNewline()
+            removeSemicolons()
+            trimTrailingWhitespace()
+        }
+    }
+
+
+    pmd {
+        ignoreFailures = true
+        consoleOutput = true
+        toolVersion = libs.versions.pmd.tool.get()
+        rulesMinimumPriority = 5
+        ruleSetFiles = files("$rootDir/config/pmd/pmd.xml") // The location of the configuration file.
+        ruleSets = []
+    }
+}

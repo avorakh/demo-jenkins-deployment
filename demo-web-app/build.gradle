@@ -1,0 +1,23 @@
+plugins {
+    id 'org.springframework.boot' apply true
+    id 'groovy' apply true
+}
+
+project.description = 'demo-web-app'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+testing {
+    suites {
+        test {
+            dependencies {
+                implementation 'org.springframework.boot:spring-boot-starter-test'
+                libs.bundles.spock.spring.test.get().forEach {
+                    implementation(it)
+                }
+            }
+        }
+    }
+}
