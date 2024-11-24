@@ -3,6 +3,7 @@ plugins {
     alias libs.plugins.dependency.management apply false
     alias libs.plugins.lombok apply false
     alias libs.plugins.spotless apply false
+    alias libs.plugins.sonarqube apply true
     alias libs.plugins.docker.java.application apply false
 }
 
@@ -136,10 +137,18 @@ subprojects {
     }
 }
 
+sonarqube {
+    properties {
+        property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY"))
+        property("sonar.organization", System.getenv("SONAR_ORGANIZATION"))
+        property("sonar.host.url", System.getenv("SONAR_HOST_URL"))
+        property("sonar.token", System.getenv("SONAR_TOKEN"))
 
-task printEnvironment {
-    doLast {
-//        println System.getenv("PATH")
-        println "Docker available: " + "/usr/local/bin/docker".execute().text
+
+        property "sonar.modules", subprojects.collect { it.name }.join(',')
+
+        property "sonar.coverage.jacoco.xmlReportPaths", subprojects.collect {
+            "${it.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        }.join(',')
     }
 }

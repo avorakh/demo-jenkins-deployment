@@ -4,6 +4,7 @@ spring-dependency-management = '1.1.4'
 spotless = '6.25.0'
 pmd-tool = '7.0.0'
 jacoco = '0.8.12'
+sonarqube = '6.0.0.5145'
 freefairLombokVersion = '8.6'
 lombok = '1.18.32'
 docker-java = '9.4.0'
@@ -31,3 +32,4 @@ dependency-management = { id = 'io.spring.dependency-management', version.ref = 
 spotless = { id = 'com.diffplug.spotless', version.ref = 'spotless' }
 lombok = { id = 'io.freefair.lombok', version.ref = 'freefairLombokVersion' }
 docker-java-application = { id = 'com.bmuschko.docker-java-application', version.ref = 'docker-java' }
+sonarqube = { id = 'org.sonarqube', version.ref = 'sonarqube' }
