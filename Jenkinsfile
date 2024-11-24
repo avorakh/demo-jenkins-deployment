@@ -54,13 +54,6 @@ spec:
     }
 
     stages {
-        stage('Prepare Workspace') {
-            steps {
-                script {
-                    sh 'chmod -R 777 .gradle'
-                }
-            }
-        }
         stage('Checkout') {
             steps {
                 checkout scm
