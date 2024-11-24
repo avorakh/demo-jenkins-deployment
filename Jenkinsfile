@@ -76,7 +76,7 @@ spec:
                             -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                             -Dsonar.organization=${env.SONAR_ORGANIZATION} \
                             -Dsonar.host.url=${env.SONAR_HOST_URL} \
-                            -Dsonar.login=${env.SONAR_TOKEN} \
+                            -Dsonar.token=${env.SONAR_TOKEN} \
                             -Dsonar.branch.name=${env.BRANCH_NAME}
                         """
                     }
