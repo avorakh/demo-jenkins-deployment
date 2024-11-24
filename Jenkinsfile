@@ -23,9 +23,7 @@ spec:
 """
         }
     }
-    triggers {
-        none()
-    }
+
     stages {
         stage('Checkout') {
             steps {
