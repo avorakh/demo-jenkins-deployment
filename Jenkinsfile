@@ -63,6 +63,7 @@ spec:
                 container('gradle') {
                     script {
                         sh './gradlew test'
+                        junit '**/build/test-results/**/*.xml'
                     }
                 }
             }
