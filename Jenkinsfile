@@ -41,6 +41,8 @@ spec:
         SONAR_ORGANIZATION = credentials('SONAR_ORGANIZATION')
         SONAR_HOST_URL = credentials('SONAR_HOST_URL')
         SONAR_TOKEN = credentials('SONAR_TOKEN')
+        DOCKER_IMAGE = 'avorakh/demo-web-app'
+        ECR_REPOSITORY = credentials('ECR_REPOSITORY')
     }
 
     stages {
@@ -85,7 +87,10 @@ spec:
             }
             steps {
                 script {
-                    echo 'Building and pushing Docker image to ECR...'
+                    sh './gradlew :demo-web-app:dockerBuildImage'
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPOSITORY'
+//                     sh 'docker tag $DOCKER_IMAGE:latest $ECR_REPOSITORY/$DOCKER_IMAGE:latest'
+//                     sh 'docker push $ECR_REPOSITORY/$DOCKER_IMAGE:latest'
                 }
             }
         }
