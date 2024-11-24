@@ -13,6 +13,10 @@ spec:
     command:
     - cat
     tty: true
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     resources:
       requests:
         memory: "2Gi"
@@ -20,6 +24,9 @@ spec:
       limits:
         memory: "2Gi"
         cpu: "2"
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
   - name: docker
     image: docker:latest
     command:
@@ -43,9 +50,17 @@ spec:
         SONAR_TOKEN = credentials('SONAR_TOKEN')
         DOCKER_IMAGE = 'avorakh/demo-web-app'
         ECR_REPOSITORY = credentials('ECR_REPOSITORY')
+        AWS_REGION = 'eu-north-1'
     }
 
     stages {
+        stage('Prepare Workspace') {
+            steps {
+                script {
+                    sh 'chmod -R 777 .gradle'
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout scm
@@ -86,11 +101,13 @@ spec:
                 }
             }
             steps {
-                script {
-                    sh './gradlew :demo-web-app:dockerBuildImage'
-                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPOSITORY'
-//                     sh 'docker tag $DOCKER_IMAGE:latest $ECR_REPOSITORY/$DOCKER_IMAGE:latest'
-//                     sh 'docker push $ECR_REPOSITORY/$DOCKER_IMAGE:latest'
+               container('gradle') {
+                    script {
+                        sh './gradlew :demo-web-app:dockerBuildImage'
+                        sh "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY"
+                        sh "docker tag $DOCKER_IMAGE:latest $ECR_REPOSITORY/$DOCKER_IMAGE:latest"
+                        sh "docker push $ECR_REPOSITORY/$DOCKER_IMAGE:latest"
+                    }
                 }
             }
         }
