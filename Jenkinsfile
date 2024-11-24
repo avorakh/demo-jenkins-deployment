@@ -77,7 +77,34 @@ spec:
                 }
             }
         }
-   }
+        stage('Docker Build and Push') {
+            when {
+                expression {
+                    return params.DOCKER_PUSH
+                }
+            }
+            steps {
+                script {
+                    echo 'Building and pushing Docker image to ECR...'
+                }
+            }
+        }
+        stage('Deploy to K8s') {
+            when {
+                expression {
+                    return params.DOCKER_PUSH
+                }
+            }
+            steps {
+                script {
+                    echo 'Deploying to Kubernetes cluster...'
+                }
+            }
+        }
+    }
+        parameters {
+            booleanParam(name: 'DOCKER_PUSH', defaultValue: false, description: 'Manually trigger Docker build and push')
+        }
     post {
         always {
             cleanWs()
