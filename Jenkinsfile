@@ -35,8 +35,7 @@ spec:
 """
         }
     }
-    triggers {
-    }
+
     stages {
         stage('Checkout') {
             steps {
