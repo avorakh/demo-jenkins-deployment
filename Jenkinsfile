@@ -30,9 +30,9 @@ spec:
   - name: docker
     image: docker:latest
     command:
-    - dockerd-entrypoint.sh
+    - sleep
     args:
-    - --host=unix:///var/run/docker.sock
+    - infinity
     tty: true
     securityContext:
       privileged: true
