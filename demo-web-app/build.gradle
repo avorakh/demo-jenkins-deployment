@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' apply true
     id 'groovy' apply true
+    id 'com.bmuschko.docker-java-application' apply true
 }
 
 project.description = 'demo-web-app'
@@ -19,5 +20,13 @@ testing {
                 }
             }
         }
+    }
+}
+
+docker {
+    javaApplication {
+        baseImage = 'eclipse-temurin:17-jre-alpine'
+        ports = [8085]
+        images = ["${project.group}/${project.name}:${project.version}", "${project.group}/${project.name}:latest"]
     }
 }

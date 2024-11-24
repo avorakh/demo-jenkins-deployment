@@ -3,11 +3,12 @@ plugins {
     alias libs.plugins.dependency.management apply false
     alias libs.plugins.lombok apply false
     alias libs.plugins.spotless apply false
+    alias libs.plugins.docker.java.application apply false
 }
 
-group = 'dev.avorakh.demo.application'
+group = 'dev.avorakh'
 
-rootProject.version = '0.1.0'
+rootProject.version = '0.2.0'
 
 subprojects {
 
@@ -19,6 +20,9 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'com.diffplug.spotless'
     apply plugin: 'pmd'
+
+    group = rootProject.group
+    version = rootProject.version
 
     java {
         toolchain {
@@ -129,5 +133,13 @@ subprojects {
         rulesMinimumPriority = 5
         ruleSetFiles = files("$rootDir/config/pmd/pmd.xml") // The location of the configuration file.
         ruleSets = []
+    }
+}
+
+
+task printEnvironment {
+    doLast {
+//        println System.getenv("PATH")
+        println "Docker available: " + "/usr/local/bin/docker".execute().text
     }
 }
