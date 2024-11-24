@@ -1,15 +1,15 @@
 pipeline {
     agent {
         kubernetes {
-            label 'java-gradle-agent'
+            label 'jenkins-agent'
             defaultContainer 'jnlp'
             yaml """
 apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: java
-    image: eclipse-temurin:17-jdk
+  - name: gradle
+    image: gradle:8.7-jdk17
     command:
     - cat
     tty: true
@@ -20,27 +20,44 @@ spec:
       limits:
         memory: "2Gi"
         cpu: "2"
+  - name: docker
+    image: docker:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
 """
         }
     }
-
+    triggers {
+    }
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        stage('Build') {
+        stage('Build without Tests') {
             steps {
                 container('gradle') {
-                    sh './gradlew clean build'
+                    script {
+                        sh './gradlew clean build -x test'
+                    }
                 }
             }
         }
-        stage('Test') {
+        stage('Run Unit Tests') {
             steps {
                 container('gradle') {
-                    sh './gradlew test'
+                    script {
+                        sh './gradlew test'
+                    }
                 }
             }
         }
