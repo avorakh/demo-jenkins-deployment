@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            label 'java-gradle'
+            label 'java-gradle-agent'
             defaultContainer 'jnlp'
             yaml """
 apiVersion: v1
@@ -13,20 +13,18 @@ spec:
     command:
     - cat
     tty: true
-  - name: docker
-    image: docker:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "2"
+      limits:
+        memory: "2Gi"
+        cpu: "2"
 """
         }
+    }
+    triggers {
+        none()
     }
     stages {
         stage('Checkout') {
