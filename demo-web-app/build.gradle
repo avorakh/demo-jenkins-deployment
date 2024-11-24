@@ -25,8 +25,11 @@ testing {
 
 docker {
     javaApplication {
-        baseImage = 'eclipse-temurin:17-jre-alpine'
+        baseImage = "$javaBaseImage"
         ports = [8085]
-        images = ["${project.group}/${project.name}:${project.version}", "${project.group}/${project.name}:latest"]
+        images = [
+                "$dockerNamespace/${project.name}:${project.version}",
+                "$dockerNamespace/${project.name}:latest"
+        ]
     }
 }

@@ -1,0 +1,23 @@
+
+replicaCount: 1
+
+image:
+  repository: avorakh/demo-web-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+nameOverride: "demo-web-app"
+fullnameOverride: "demo-web-app"
+
+namespace: demo-app
+
+# Default service type; can be ClusterIP, LoadBalancer, or NodePort
+service:
+  type: LoadBalancer
+  port: 8085
+  targetPort: 8085
+  # The port used if the service type is NodePort
+  nodePort: 30080
+
+# Java application port
+javaPort: 8085
