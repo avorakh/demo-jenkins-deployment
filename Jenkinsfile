@@ -36,6 +36,13 @@ spec:
         }
     }
 
+    environment {
+        SONAR_PROJECT_KEY = credentials('SONAR_PROJECT_KEY')
+        SONAR_ORGANIZATION = credentials('SONAR_ORGANIZATION')
+        SONAR_HOST_URL = credentials('SONAR_HOST_URL')
+        SONAR_TOKEN = credentials('SONAR_TOKEN')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -60,7 +67,22 @@ spec:
                 }
             }
         }
-    }
+        stage('SonarQube Analysis') {
+            steps {
+                container('gradle') {
+                    withSonarQubeEnv('SonarCloud') {
+                        sh """
+                        ./gradlew sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.organization=${SONAR_ORGANIZATION} \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_TOKEN}
+                        """
+                    }
+                }
+            }
+        }
+   }
     post {
         always {
             cleanWs()
