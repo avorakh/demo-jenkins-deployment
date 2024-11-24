@@ -74,11 +74,11 @@ spec:
                     script {
                         sh """
                         ./gradlew sonar \
-                            -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
-                            -Dsonar.organization=${env.SONAR_ORGANIZATION} \
-                            -Dsonar.host.url=${env.SONAR_HOST_URL} \
-                            -Dsonar.token=${env.SONAR_TOKEN} \
-                            -Dsonar.branch.name=${env.BRANCH_NAME}
+                            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                            -Dsonar.organization=$SONAR_ORGANIZATION \
+                            -Dsonar.host.url=$SONAR_HOST_URL \
+                            -Dsonar.token=$SONAR_TOKEN \
+                            -Dsonar.branch.name=$BRANCH_NAME
                         """
                     }
                 }
