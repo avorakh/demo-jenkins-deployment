@@ -70,13 +70,13 @@ spec:
         stage('SonarQube Analysis') {
             steps {
                 container('gradle') {
-                    withSonarQubeEnv('SonarCloud') {
+                    script {
                         sh """
                         ./gradlew sonar \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                            -Dsonar.organization=${SONAR_ORGANIZATION} \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=${SONAR_TOKEN}
+                            -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                            -Dsonar.organization=${env.SONAR_ORGANIZATION} \
+                            -Dsonar.host.url=${env.SONAR_HOST_URL} \
+                            -Dsonar.login=${env.SONAR_TOKEN}
                         """
                     }
                 }
