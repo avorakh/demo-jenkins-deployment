@@ -30,8 +30,12 @@ spec:
   - name: docker
     image: docker:latest
     command:
-    - cat
+    - dockerd-entrypoint.sh
+    args:
+    - --host=unix:///var/run/docker.sock
     tty: true
+    securityContext:
+      privileged: true
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
@@ -94,9 +98,13 @@ spec:
                 }
             }
             steps {
-               container('gradle') {
+                container('gradle') {
                     script {
                         sh './gradlew :demo-web-app:dockerBuildImage'
+                    }
+                }
+                container('docker') {
+                    script {
                         sh "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY"
                         sh "docker tag $DOCKER_IMAGE:latest $ECR_REPOSITORY/$DOCKER_IMAGE:latest"
                         sh "docker push $ECR_REPOSITORY/$DOCKER_IMAGE:latest"
