@@ -102,9 +102,9 @@ spec:
             }
         }
     }
-        parameters {
-            booleanParam(name: 'DOCKER_PUSH', defaultValue: false, description: 'Manually trigger Docker build and push')
-        }
+    parameters {
+        booleanParam(name: 'DOCKER_PUSH', defaultValue: false, description: 'Manually trigger Docker build and push')
+    }
     post {
         always {
             cleanWs()
