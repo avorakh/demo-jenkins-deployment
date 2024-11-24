@@ -8,8 +8,8 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: gradle
-    image: gradle:8.7-jdk17
+  - name: java
+    image: eclipse-temurin:17-jdk
     command:
     - cat
     tty: true
@@ -33,14 +33,14 @@ spec:
         stage('Build') {
             steps {
                 container('gradle') {
-                    sh './gradle clean build'
+                    sh './gradlew clean build'
                 }
             }
         }
         stage('Test') {
             steps {
                 container('gradle') {
-                    sh './gradle test'
+                    sh './gradlew test'
                 }
             }
         }
