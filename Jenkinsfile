@@ -72,14 +72,7 @@ spec:
             steps {
                 container('gradle') {
                     script {
-                        sh """
-                        ./gradlew sonar \
-                            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                            -Dsonar.organization=$SONAR_ORGANIZATION \
-                            -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.token=$SONAR_TOKEN \
-                            -Dsonar.branch.name=$BRANCH_NAME
-                        """
+                        sh ('./gradlew sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORGANIZATION -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.token=$SONAR_TOKEN -Dsonar.branch.name=$BRANCH_NAME')
                     }
                 }
             }
