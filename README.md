@@ -11,6 +11,7 @@ Before starting, ensure you have the following:
     - Jenkins installed and running.
     - Kubernetes plugin installed and configured.
     - AWS Credentials plugin installed.
+    - Email Extension Plugin installed and configured
 
 2. **Dependencies**:
 
