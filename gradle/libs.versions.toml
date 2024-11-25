@@ -7,6 +7,7 @@ jacoco = '0.8.12'
 sonarqube = '6.0.0.5145'
 freefairLombokVersion = '8.6'
 lombok = '1.18.32'
+docker-java = '9.4.0'
 jb-annotation = '24.1.0'
 junit = '5.10.2'
 groovy = '4.0.21'
@@ -30,4 +31,5 @@ spring-boot = { id = 'org.springframework.boot', version.ref = 'spring-boot' }
 dependency-management = { id = 'io.spring.dependency-management', version.ref = 'spring-dependency-management' }
 spotless = { id = 'com.diffplug.spotless', version.ref = 'spotless' }
 lombok = { id = 'io.freefair.lombok', version.ref = 'freefairLombokVersion' }
+docker-java-application = { id = 'com.bmuschko.docker-java-application', version.ref = 'docker-java' }
 sonarqube = { id = 'org.sonarqube', version.ref = 'sonarqube' }
