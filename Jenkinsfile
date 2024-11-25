@@ -56,6 +56,7 @@ spec:
         ECR_REPOSITORY = credentials('ECR_REPOSITORY')
         AWS_REGION = 'eu-north-1'
         K8S_CONFIG = credentials('K8S_CONFIG')
+        RECIPIENTS = credentials('EMAILS')
     }
 
     stages {
@@ -133,6 +134,28 @@ spec:
         booleanParam(name: 'DOCKER_PUSH', defaultValue: false, description: 'Manually trigger Docker build and push')
     }
     post {
+    success {
+        script {
+                echo 'Pipeline succeeded!'
+                emailext(
+                    subject: "SUCCESS: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: "Good news! The pipeline ${env.JOB_NAME} build number ${env.BUILD_NUMBER} succeeded.",
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                    to: "${env.RECIPIENTS}"
+                )
+            }
+        }
+        failure {
+            script {
+                echo 'Pipeline failed!'
+                emailext(
+                    subject: "FAILURE: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: "Unfortunately, the pipeline ${env.JOB_NAME} build number ${env.BUILD_NUMBER} failed. Please check the Jenkins console output for more details.",
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                    to: "${env.RECIPIENTS}"
+                )
+            }
+        }
         always {
             cleanWs()
         }
