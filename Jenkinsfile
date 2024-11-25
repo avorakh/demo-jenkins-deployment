@@ -17,13 +17,6 @@ spec:
       runAsUser: 1000
       runAsGroup: 1000
       fsGroup: 1000
-    resources:
-      requests:
-        memory: "2Gi"
-        cpu: "2"
-      limits:
-        memory: "2Gi"
-        cpu: "2"
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
@@ -39,6 +32,13 @@ spec:
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
+  - name: helm
+    image: alpine/helm:3.7.1
+    command:
+    - sleep
+    args:
+    - infinity
+    tty: true
   volumes:
   - name: docker-sock
     hostPath:
@@ -55,6 +55,7 @@ spec:
         DOCKER_IMAGE = 'avorakh/demo-web-app'
         ECR_REPOSITORY = credentials('ECR_REPOSITORY')
         AWS_REGION = 'eu-north-1'
+        K8S_CONFIG = credentials('K8S_CONFIG')
     }
 
     stages {
@@ -119,8 +120,11 @@ spec:
                 }
             }
             steps {
-                script {
-                    echo 'Deploying to Kubernetes cluster...'
+                container('helm') {
+                    script {
+                        sh 'echo $K8S_CONFIG | base64 --decode > /root/.kube/config'
+                        sh 'helm upgrade --install demo-web-app helm/demo-web-app --namespace demo-app'
+                    }
                 }
             }
         }
