@@ -13,21 +13,32 @@ spec:
     command:
     - cat
     tty: true
-    resources:
-      requests:
-        memory: "2Gi"
-        cpu: "2"
-      limits:
-        memory: "2Gi"
-        cpu: "2"
-  - name: docker
-    image: docker:latest
-    command:
-    - cat
-    tty: true
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     volumeMounts:
     - name: docker-sock
       mountPath: /var/run/docker.sock
+  - name: docker
+    image: docker:latest
+    command:
+    - sleep
+    args:
+    - infinity
+    tty: true
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  - name: helm
+    image: alpine/helm:3.7.1
+    command:
+    - sleep
+    args:
+    - infinity
+    tty: true
   volumes:
   - name: docker-sock
     hostPath:
@@ -41,6 +52,10 @@ spec:
         SONAR_ORGANIZATION = credentials('SONAR_ORGANIZATION')
         SONAR_HOST_URL = credentials('SONAR_HOST_URL')
         SONAR_TOKEN = credentials('SONAR_TOKEN')
+        DOCKER_IMAGE = 'avorakh/demo-web-app'
+        ECR_REPOSITORY = credentials('ECR_REPOSITORY')
+        AWS_REGION = 'eu-north-1'
+        K8S_CONFIG = credentials('K8S_CONFIG')
     }
 
     stages {
@@ -84,8 +99,17 @@ spec:
                 }
             }
             steps {
-                script {
-                    echo 'Building and pushing Docker image to ECR...'
+                container('gradle') {
+                    script {
+                        sh './gradlew :demo-web-app:dockerBuildImage'
+                    }
+                }
+                container('docker') {
+                    script {
+                        sh "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY"
+                        sh "docker tag $DOCKER_IMAGE:latest $ECR_REPOSITORY/$DOCKER_IMAGE:latest"
+                        sh "docker push $ECR_REPOSITORY/$DOCKER_IMAGE:latest"
+                    }
                 }
             }
         }
@@ -96,8 +120,11 @@ spec:
                 }
             }
             steps {
-                script {
-                    echo 'Deploying to Kubernetes cluster...'
+                container('helm') {
+                    script {
+                        sh 'echo $K8S_CONFIG | base64 --decode > /root/.kube/config'
+                        sh 'helm upgrade --install demo-web-app helm/demo-web-app --namespace demo-app'
+                    }
                 }
             }
         }
